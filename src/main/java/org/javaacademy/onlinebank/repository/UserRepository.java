@@ -10,10 +10,11 @@ import java.util.*;
 public class UserRepository {
     private final Map<String, User> users = new HashMap<>();
 
-    public void createUser(String phoneNumber, String name) {
+    public User createUser(String phoneNumber, String name) {
         UUID id = UUID.randomUUID();
         User user = new User(id, phoneNumber, name);
         users.put(id.toString(), user);
+        return user;
     }
 
     public Optional<User> findByKey(String key) {
