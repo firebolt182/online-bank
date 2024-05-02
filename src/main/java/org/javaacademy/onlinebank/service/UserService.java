@@ -1,13 +1,12 @@
 package org.javaacademy.onlinebank.service;
 
+import java.util.Random;
+import java.util.UUID;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.javaacademy.onlinebank.entity.User;
 import org.javaacademy.onlinebank.repository.UserRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.Random;
-import java.util.UUID;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor

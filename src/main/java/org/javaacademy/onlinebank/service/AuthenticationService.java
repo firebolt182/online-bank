@@ -1,10 +1,9 @@
 package org.javaacademy.onlinebank.service;
 
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.javaacademy.onlinebank.repository.AuthenticationRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor

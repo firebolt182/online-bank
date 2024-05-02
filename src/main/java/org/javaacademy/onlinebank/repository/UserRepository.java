@@ -1,12 +1,10 @@
 package org.javaacademy.onlinebank.repository;
 
+import java.util.*;
 import org.javaacademy.onlinebank.entity.User;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-
 @Service
-
 public class UserRepository {
     private final Map<String, User> users = new HashMap<>();
 

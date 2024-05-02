@@ -3,7 +3,9 @@ package org.javaacademy.onlinebank.repository;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AuthenticationRepository {
     private Map<UUID, StringBuilder> data = new HashMap<>();
 
