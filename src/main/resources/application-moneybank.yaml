@@ -1,0 +1,9 @@
+integration:
+  bank:
+    name: LLC MoneyBank
+    partner:
+      url: http://localhost:8001
+
+server:
+  port: 8082
+

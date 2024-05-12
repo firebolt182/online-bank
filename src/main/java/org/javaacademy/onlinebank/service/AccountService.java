@@ -2,27 +2,29 @@ package org.javaacademy.onlinebank.service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.javaacademy.onlinebank.dto.AccountDto;
 import org.javaacademy.onlinebank.entity.Account;
 import org.javaacademy.onlinebank.entity.User;
 import org.javaacademy.onlinebank.repository.AccountRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Service
 @RequiredArgsConstructor
 public class AccountService {
-    private static Integer accNum = 0;
-    private AccountRepository accountRepository;
+    private final UserService userService;
+    private Integer counter = 0;
+    private final AccountRepository accountRepository;
 
     private String generateAccountNumber() {
-        accNum++;
-        return String.format("%06d", accNum);
+        counter++;
+        return String.format("%06d", counter);
     }
 
     public Account createAccount(User user) {
         String accountNumber = generateAccountNumber();
-        Account account = new Account(accountNumber, user, new BigDecimal("0.00"));
+        Account account = new Account(accountNumber, user, BigDecimal.ZERO);
         accountRepository.add(account);
         return account;
     }
@@ -43,20 +45,27 @@ public class AccountService {
         account.setBalance(account.getBalance().subtract(amount));
     }
 
-    public List<Account> findUserAccounts(User user) {
+    public List<AccountDto> findUserAccounts(User user) {
         return accountRepository.findAllUserAccounts(user);
     }
 
-    public BigDecimal showBalance(String accountNumber) {
-        Account account = checkAccount(accountNumber);
-        return account.getBalance();
+    public BigDecimal showBalance(String accountNumber,
+                                  @RequestParam(name = "token") String token) {
+        User user = userService.findByToken(token);
+        if (!checkBelonging(user, accountNumber)) {
+            throw new RuntimeException("Ошибка. Не верно указаны данные");
+        }
+        return checkAccount(accountNumber).getBalance();
     }
 
     public boolean checkBelonging(User user, String accountNumber) {
-        Optional<Account> acc = findUserAccounts(user).stream()
-                .filter(account -> account.getAccountNumber()
-                        .equals(accountNumber)).findFirst();
-        return acc.isPresent();
+        return findUserAccounts(user).stream()
+                .anyMatch(account -> account.getAccountNumber()
+                        .equals(accountNumber));
+    }
+
+    public User findUserByAccountNumber(String accountNumber) {
+        return accountRepository.findUserByAccountNumber(accountNumber);
     }
 
     private Account checkAccount(String accountNumber) {
