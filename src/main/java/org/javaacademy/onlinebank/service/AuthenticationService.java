@@ -8,13 +8,13 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
-    AuthenticationRepository authenticationRepository;
+    private final AuthenticationRepository authenticationRepository;
 
-    public void write(UUID id, StringBuilder pin) {
+    public void write(UUID id, String pin) {
         authenticationRepository.add(id, pin);
     }
 
-    public boolean authentication(UUID id, StringBuilder pin) {
+    public boolean authentication(UUID id, String pin) {
         return authenticationRepository.authentication(id, pin);
     }
 

@@ -1,14 +1,13 @@
 package org.javaacademy.onlinebank.repository;
 
-import com.sun.source.tree.Tree;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.javaacademy.onlinebank.entity.Account;
+import org.javaacademy.onlinebank.dto.AccountDto;
+import org.javaacademy.onlinebank.dto.OperationDto;
 import org.javaacademy.onlinebank.entity.Operation;
 import org.javaacademy.onlinebank.entity.User;
 import org.springframework.stereotype.Service;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,21 +19,42 @@ public class OperationRepository {
         operations.put(operation.getId(), operation);
     }
 
-    public Set<Operation> findAll() {
-        Set<Operation> founded = new TreeSet<>(((o1, o2) -> o2.getLocalDateTime().compareTo(o1.getLocalDateTime())));
-        founded.addAll(operations.values());
+    public Set<OperationDto> findAllOperationsByAccount(String accountNumber) {
+        Set<OperationDto> founded = createTreeSet();
+        Set<OperationDto> operationSet = operations.values().stream()
+                .map(this::convertToDto)
+                .filter(operation -> operation.getAccountNumber().equals(accountNumber))
+                .collect(Collectors.toSet());
+        founded.addAll(operationSet);
         return founded;
     }
 
-    public Set<Operation> findUserOperations(User user) {
-        Set<Operation> founded = new TreeSet<>(((o1, o2) -> o2.getLocalDateTime().compareTo(o1.getLocalDateTime())));
-        List<Account> userAccounts = accountRepository.findAllUserAccounts(user);
-        for (Account acc : userAccounts) {
+    public Set<OperationDto> findUserOperations(User user) {
+        Set<OperationDto> founded = createTreeSet();
+        List<AccountDto> userAccounts = accountRepository.findAllUserAccounts(user);
+        for (AccountDto acc : userAccounts) {
             operations.values().stream()
-                    .filter(operation -> operation.getAccountNumber().equals(acc.getAccountNumber()))
+                    .map(this::convertToDto)
+                    .filter(operation -> operation.getAccountNumber()
+                            .equals(acc.getAccountNumber()))
                     .forEach(founded::add);
         }
         return founded;
+    }
+
+    private Set<OperationDto> createTreeSet() {
+        return new TreeSet<>(((o1, o2) -> o2.getLocalDateTime().compareTo(o1.getLocalDateTime())));
+    }
+
+    private OperationDto convertToDto(Operation operation) {
+        return new OperationDto(
+                operation.getId(),
+                operation.getLocalDateTime(),
+                operation.getAccountNumber(),
+                operation.getType(),
+                operation.getAmount(),
+                operation.getDescription()
+        );
     }
 }
 
